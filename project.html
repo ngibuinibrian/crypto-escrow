@@ -111,6 +111,24 @@
         link.classList.add("font-semibold", "text-indigo-600");
       }
     });
+    const params = new URLSearchParams(window.location.search);
+const projectName = params.get("project");
+
+const projects = JSON.parse(localStorage.getItem("customProjects") || "[]");
+const project = projects.find(p => p.name === projectName);
+
+if (project) {
+  document.getElementById("projName").innerText = project.name;
+  document.getElementById("projCategory").innerText = project.category;
+  document.getElementById("projDescription").innerText = project.description;
+  document.getElementById("projStatus").innerText = project.status;
+  document.getElementById("applyLink").href = `escrow.html?project=${encodeURIComponent(project.name)}`;
+} else {
+  document.getElementById("projectDetails").innerHTML = `
+    <p class="text-red-500">⚠️ Project not found.</p>
+    <a href="index.html" class="text-indigo-600 text-sm hover:underline">← Go Back</a>
+  `;
+}
   </script>
 </body>
 </html>

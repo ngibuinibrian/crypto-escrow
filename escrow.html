@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Apply for Escrow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    button, a { transition: all 0.2s ease; }
+    button:hover, a:hover { transform: scale(1.02); }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Navigation -->
+  <header class="bg-white dark:bg-gray-900 p-4 shadow-md">
+    <div class="flex justify-between items-center">
+      <h1 class="text-lg font-bold text-indigo-600">CryptoEscrow</h1>
+      <button id="menuBtn" class="text-gray-600 dark:text-gray-300 focus:outline-none text-2xl sm:hidden">☰</button>
+    </div>
+    <nav id="mobileMenu" class="mt-2 hidden sm:flex flex-col sm:flex-row sm:space-x-4 text-sm text-gray-700 dark:text-gray-200">
+      <a href="index.html" class="nav-link hover:underline py-1">🏠 Home</a>
+      <a href="submit.html" class="nav-link hover:underline py-1">📤 Submit Project</a>
+      <a href="escrow.html" class="nav-link hover:underline py-1">💼 Request Escrow</a>
+      <a href="status.html" class="nav-link hover:underline py-1">📍 Track Status</a>
+      <a href="admin.html" class="nav-link hover:underline py-1">🔐 Admin</a>
+      <a href="terms.html" class="nav-link hover:underline py-1">📜 Terms</a>
+      <a href="privacy.html" class="nav-link hover:underline py-1">🔒 Privacy</a>
+    </nav>
+  </header>
+  <!-- Wallet Connect Button -->
+<button onclick="openWalletModal()" id="walletBtn" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded">
+  🔌 Connect Wallet
+</button>
+
+<!-- Modal -->
+<div id="walletModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg max-w-sm w-full">
+    <h2 class="text-xl font-semibold mb-4">Connect Wallet</h2>
+    <button onclick="connectFakeWallet()" class="w-full bg-orange-500 text-white p-2 rounded hover:bg-orange-600">🦊 MetaMask (Simulated)</button>
+    <button onclick="closeWalletModal()" class="w-full mt-4 text-sm text-gray-500 hover:underline">Cancel</button>
+  </div>
+</div>
+
+<script>
+  function openWalletModal() {
+    document.getElementById("walletModal").classList.remove("hidden");
+  }
+  
+  function closeWalletModal() {
+    document.getElementById("walletModal").classList.add("hidden");
+  }
+  
+  function connectFakeWallet() {
+    const fakeAddress = "0x" + Math.random().toString(16).substr(2, 40);
+    localStorage.setItem("walletAddress", fakeAddress);
+    updateWalletUI();
+    closeWalletModal();
+    alert("✅ Wallet connected!");
+  }
+  
+  function updateWalletUI() {
+    const walletBtn = document.getElementById("walletBtn");
+    const address = localStorage.getItem("walletAddress");
+    if (address) {
+      walletBtn.textContent = "✅ Wallet Connected";
+      walletBtn.classList.remove("bg-gray-200");
+      walletBtn.classList.add("bg-green-200", "text-green-800");
+    }
+  }
+  
+  updateWalletUI();
+</script>
+
+  <!-- ✅ Main Content -->
+  <main class="p-6 max-w-xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">📄 Apply for Escrow</h1>
+
+    <form id="escrowForm" class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow space-y-4">
+      <div>
+        <label class="block mb-1 font-medium">Project Name</label>
+        <input type="text" name="project" id="projectName" required class="w-full p-2 rounded border dark:bg-gray-700 dark:border-gray-600" placeholder="e.g. Solana Launchpad" />
+      </div>
+
+      <div>
+        <label class="block mb-1 font-medium">Buyer Name</label>
+        <input type="text" name="buyer" required class="w-full p-2 rounded border dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+
+      <div>
+        <label class="block mb-1 font-medium">Seller Name</label>
+        <input type="text" name="seller" required class="w-full p-2 rounded border dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+
+      <div>
+        <label class="block mb-1 font-medium">Amount (in USDT)</label>
+        <input type="number" name="amount" required class="w-full p-2 rounded border dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+
+      <div>
+        <label class="block mb-1 font-medium">Terms / Notes</label>
+        <textarea name="terms" rows="3" required class="w-full p-2 rounded border dark:bg-gray-700 dark:border-gray-600" placeholder="Describe your terms..."></textarea>
+      </div>
+
+      <button type="submit" class="w-full bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700">
+        Submit Escrow Request
+      </button>
+    </form>
+
+    <p id="successMsg" class="text-green-600 mt-4 hidden">✅ Escrow request submitted!</p>
+  </main>
+
+  <!-- Floating Back Home -->
+  <a href="index.html" class="fixed bottom-6 right-6 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition">
+    🏠
+  </a>
+
+  <!-- ✅ JavaScript -->
+  <script>
+    // Toggle nav menu
+    document.getElementById("menuBtn").onclick = () => {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
+    };
+
+    // Highlight current page
+    const currentPage = window.location.pathname.split("/").pop();
+    document.querySelectorAll(".nav-link").forEach(link => {
+      if (link.getAttribute("href") === currentPage) {
+        link.classList.add("font-semibold", "text-indigo-600");
+      }
+    });
+
+    // Prefill project name from URL
+    const params = new URLSearchParams(window.location.search);
+    const prefillProject = params.get("project");
+    if (prefillProject) {
+      document.getElementById("projectName").value = decodeURIComponent(prefillProject);
+    }
+
+    // Submit form
+    const form = document.getElementById("escrowForm");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      data.status = "Pending";
+
+      const existing = JSON.parse(localStorage.getItem("escrowRequests") || "[]");
+      existing.push(data);
+      localStorage.setItem("escrowRequests", JSON.stringify(existing));
+
+      form.reset();
+      document.getElementById("successMsg").classList.remove("hidden");
+    });
+  </script>
+
+</body>
+</html>

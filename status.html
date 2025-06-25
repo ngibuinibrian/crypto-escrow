@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Check Escrow Status</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <header class="bg-white dark:bg-gray-900 p-4 shadow-md">
+    <div class="flex justify-between items-center">
+      <h1 class="text-lg font-bold text-indigo-600">CryptoEscrow</h1>
+      <button id="menuBtn" class="text-gray-600 dark:text-gray-300 text-2xl sm:hidden">☰</button>
+    </div>
+    <nav id="mobileMenu" class="mt-2 hidden sm:flex flex-col sm:flex-row sm:space-x-4 text-sm text-gray-700 dark:text-gray-200">
+      <a href="index.html" class="nav-link py-1 hover:underline">🏠 Home</a>
+      <a href="submit.html" class="nav-link py-1 hover:underline">📤 Submit Project</a>
+      <a href="escrow.html" class="nav-link py-1 hover:underline">💼 Request Escrow</a>
+      <a href="status.html" class="nav-link py-1 hover:underline">📍 Track Status</a>
+      <a href="admin.html" class="nav-link py-1 hover:underline">🔐 Admin</a>
+    </nav>
+  </header>
+
+  <main class="p-6 max-w-xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">📍 Track Your Escrow Status</h1>
+    <form onsubmit="checkStatus(event)" class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow space-y-4">
+      <input type="text" id="lookup" class="w-full p-2 rounded border dark:bg-gray-700 dark:border-gray-600" placeholder="Enter project or buyer name" required />
+      <button class="w-full bg-indigo-600 text-white p-2 rounded">Search</button>
+    </form>
+    <div id="result" class="mt-6 text-sm space-y-4"></div>
+  </main>
+
+  <script>
+    document.getElementById("menuBtn").onclick = () => {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
+    };
+    const currentPage = window.location.pathname.split("/").pop();
+    document.querySelectorAll(".nav-link").forEach(link => {
+      if (link.getAttribute("href") === currentPage) {
+        link.classList.add("font-semibold", "text-indigo-600");
+      }
+    });
+
+    function checkStatus(e) {
+      e.preventDefault();
+      const keyword = document.getElementById("lookup").value.toLowerCase();
+      const requests = JSON.parse(localStorage.getItem("escrowRequests") || "[]");
+      const matches = requests.filter(r =>
+        r.project.toLowerCase().includes(keyword) || r.buyer.toLowerCase().includes(keyword)
+      );
+
+      const result = document.getElementById("result");
+      result.innerHTML = "";
+
+      if (matches.length === 0) {
+        result.innerHTML = "<p class='text-red-500'>No matching requests found.</p>";
+      } else {
+        matches.forEach(r => {
+          result.innerHTML += `
+            <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
+              <p><strong>Project:</strong> ${r.project}</p>
+              <p><strong>Buyer:</strong> ${r.buyer}</p>
+              <p><strong>Status:</strong>
+                <span class="inline-block px-2 py-1 text-xs rounded-full ${
+                  r.status === "Approved"
+                    ? "bg-green-100 text-green-700"
+                    : r.status === "Rejected"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-yellow-100 text-yellow-700"
+                }">${r.status}</span>
+              </p>
+            </div>
+          `;
+        });
+      }
+    }
+  </script>
+</body>
+</html>

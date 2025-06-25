@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Project</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <header class="bg-white dark:bg-gray-900 p-4 shadow-md">
+    <div class="flex justify-between items-center">
+      <h1 class="text-lg font-bold text-indigo-600">CryptoEscrow</h1>
+      <button id="menuBtn" class="text-gray-600 dark:text-gray-300 text-2xl sm:hidden">☰</button>
+    </div>
+    <nav id="mobileMenu" class="mt-2 hidden sm:flex flex-col sm:flex-row sm:space-x-4 text-sm text-gray-700 dark:text-gray-200">
+      <a href="index.html" class="nav-link py-1 hover:underline">🏠 Home</a>
+      <a href="submit.html" class="nav-link py-1 hover:underline">📤 Submit Project</a>
+      <a href="escrow.html" class="nav-link py-1 hover:underline">💼 Request Escrow</a>
+      <a href="status.html" class="nav-link py-1 hover:underline">📍 Track Status</a>
+      <a href="admin.html" class="nav-link py-1 hover:underline">🔐 Admin</a>
+      <a href="terms.html" class="nav-link py-1 hover:underline">📜 Terms</a>
+      <a href="privacy.html" class="nav-link py-1 hover:underline">🔒 Privacy</a>
+    </nav>
+  </header>
+  <!-- Wallet Connect Button -->
+<button onclick="openWalletModal()" id="walletBtn" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded">
+  🔌 Connect Wallet
+</button>
+
+<!-- Modal -->
+<div id="walletModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg max-w-sm w-full">
+    <h2 class="text-xl font-semibold mb-4">Connect Wallet</h2>
+    <button onclick="connectFakeWallet()" class="w-full bg-orange-500 text-white p-2 rounded hover:bg-orange-600">🦊 MetaMask (Simulated)</button>
+    <button onclick="closeWalletModal()" class="w-full mt-4 text-sm text-gray-500 hover:underline">Cancel</button>
+  </div>
+</div>
+
+<script>
+  function openWalletModal() {
+    document.getElementById("walletModal").classList.remove("hidden");
+  }
+  
+  function closeWalletModal() {
+    document.getElementById("walletModal").classList.add("hidden");
+  }
+  
+  function connectFakeWallet() {
+    const fakeAddress = "0x" + Math.random().toString(16).substr(2, 40);
+    localStorage.setItem("walletAddress", fakeAddress);
+    updateWalletUI();
+    closeWalletModal();
+    alert("✅ Wallet connected!");
+  }
+  
+  function updateWalletUI() {
+    const walletBtn = document.getElementById("walletBtn");
+    const address = localStorage.getItem("walletAddress");
+    if (address) {
+      walletBtn.textContent = "✅ Wallet Connected";
+      walletBtn.classList.remove("bg-gray-200");
+      walletBtn.classList.add("bg-green-200", "text-green-800");
+    }
+  }
+  
+  updateWalletUI();
+</script>
+
+  <main class="p-6 max-w-xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">📤 Submit a New Project</h1>
+    <form id="submitForm" class="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+      <input required name="name" placeholder="Project Name" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+      <input required name="category" placeholder="Category" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+      <textarea required name="description" placeholder="Short Description" rows="3" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"></textarea>
+      <select name="status" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+        <option value="Upcoming">Upcoming</option>
+        <option value="Active">Active</option>
+        <option value="Closed">Closed</option>
+      </select>
+      <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:bg-indigo-700">Submit</button>
+    </form>
+    <p id="done" class="text-green-600 mt-4 hidden">✅ Project added!</p>
+  </main>
+
+  <script>
+    document.getElementById("menuBtn").onclick = () => {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
+    };
+
+    const currentPage = window.location.pathname.split("/").pop();
+    document.querySelectorAll(".nav-link").forEach(link => {
+      if (link.getAttribute("href") === currentPage) {
+        link.classList.add("font-semibold", "text-indigo-600");
+      }
+    });
+
+    document.getElementById("submitForm").onsubmit = e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+
+      const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
+      customProjects.push(data);
+      localStorage.setItem("customProjects", JSON.stringify(customProjects));
+
+      e.target.reset();
+      document.getElementById("done").classList.remove("hidden");
+    };
+  </script>
+</body>
+</html>

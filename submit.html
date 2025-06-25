@@ -68,17 +68,18 @@
 
   <main class="p-6 max-w-xl mx-auto">
     <h1 class="text-2xl font-bold mb-4">📤 Submit a New Project</h1>
-    <form id="submitForm" class="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-      <input required name="name" placeholder="Project Name" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-      <input required name="category" placeholder="Category" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-      <textarea required name="description" placeholder="Short Description" rows="3" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"></textarea>
-      <select name="status" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-        <option value="Upcoming">Upcoming</option>
-        <option value="Active">Active</option>
-        <option value="Closed">Closed</option>
-      </select>
-      <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:bg-indigo-700">Submit</button>
-    </form>
+    <form action="https://formspree.io/f/xknllpab" method="POST" class="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+  <input name="name" required placeholder="Project Name" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+  <input name="category" required placeholder="Category" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+  <textarea name="description" required placeholder="Description" rows="3" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"></textarea>
+  <select name="status" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+    <option value="Upcoming">Upcoming</option>
+    <option value="Active">Active</option>
+    <option value="Closed">Closed</option>
+  </select>
+  <input type="email" name="_replyto" placeholder="Your Email (optional)" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+  <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:bg-indigo-700">📤 Submit</button>
+</form>
     <p id="done" class="text-green-600 mt-4 hidden">✅ Project added!</p>
   </main>
 

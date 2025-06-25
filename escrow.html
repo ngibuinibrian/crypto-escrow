@@ -155,6 +155,13 @@
       document.getElementById("successMsg").classList.remove("hidden");
     });
   </script>
-
+<script>
+  const currentPage = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".nav-link").forEach(link => {
+    if (link.getAttribute("href") === currentPage) {
+      link.classList.add("font-semibold", "text-indigo-600");
+    }
+  });
+</script>
 </body>
 </html>

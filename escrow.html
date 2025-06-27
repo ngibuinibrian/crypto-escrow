@@ -1,8 +1,8 @@
 <!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Submit Project</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Escrow</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-[#0d0d0d] text-white">  <!-- Header -->  <header class="bg-[#1a1a1a] p-4 shadow-md">
@@ -21,17 +21,13 @@
       <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">Admin</a>
     </nav>
   </header>  <!-- Main Content -->  <main class="p-6 max-w-xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Submit a New Project</h1><form action="https://formspree.io/f/xknllpab" method="POST" class="space-y-4 bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md p-6 rounded-xl shadow">
-  <input name="name" required placeholder="Project Name" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <input name="category" required placeholder="Category" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <textarea name="description" required placeholder="Short Description" rows="3" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white"></textarea>
-  <select name="status" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-    <option value="Upcoming">Upcoming</option>
-    <option value="Active">Active</option>
-    <option value="Closed">Closed</option>
-  </select>
+    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Request Escrow Service</h1><form action="https://formspree.io/f/movwyvgz" method="POST" class="space-y-4 bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md p-6 rounded-xl shadow">
+  <input name="project" required placeholder="Project Name" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+  <input name="buyer" required placeholder="Your Name or Wallet Address" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+  <input name="amount" required placeholder="Amount (in USD or Token)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+  <textarea name="details" required placeholder="Escrow Details or Notes" rows="3" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white"></textarea>
   <input type="email" name="_replyto" placeholder="Your Email (optional)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Submit</button>
+  <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Submit Request</button>
 </form>
 
   </main>  <!-- Footer -->  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
@@ -45,7 +41,7 @@
         <a href="https://instagram.com/yourprofile" target="_blank" class="hover:text-pink-400">Instagram</a>
       </div>
     </div>
-  </footer>  <!-- Scripts -->  <script>
+  </footer>  <!-- Script -->  <script>
     document.getElementById("menuBtn").onclick = () => {
       document.getElementById("mobileMenu").classList.toggle("hidden");
     };

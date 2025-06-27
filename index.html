@@ -1,104 +1,95 @@
-<!DOCTYPE html>
-<html lang="en" class="bg-[#0d0d0d] :text-white">
+<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CryptoEscrow - Home</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CryptoEscrow - Secure Your Launch</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <header class="bg-[#0d0d0d] p-4 shadow-md">
+<body class="bg-[#0d0d0d] text-white">  <!-- Header -->  <header class="bg-[#1a1a1a] p-4 shadow-md">
     <div class="flex justify-between items-center">
-      <h1 class="text-lg font-bold text-indigo-600">CryptoEscrow</h1>
-      <button id="menuBtn" class="text-gray-600 dark:text-gray-300 text-2xl sm:hidden">☰</button>
+      <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow</h1>
+      <div class="flex gap-3 items-center">
+        <button id="walletBtn" onclick="openWalletModal()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
+        <button id="menuBtn" class="text-white text-2xl sm:hidden">☰</button>
+      </div>
     </div>
     <nav id="mobileMenu" class="fixed top-20 right-4 z-50 bg-[#1a1a1a] text-white rounded-xl shadow-xl border border-gray-700 p-4 space-y-2 hidden sm:flex sm:static sm:bg-transparent sm:shadow-none sm:border-none sm:space-y-0 sm:flex-row sm:space-x-4 sm:p-0">
-  <a href="index.html" class="nav-link block hover:underline">🏠 Home</a>
-  <a href="submit.html" class="nav-link block hover:underline">📤 Submit Project</a>
-  <a href="escrow.html" class="nav-link block hover:underline">💼 Request Escrow</a>
-  <a href="status.html" class="nav-link block hover:underline">📍 Track Status</a>
-  <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">🔐 Admin</a>
+      <a href="index.html" class="nav-link block hover:underline">Home</a>
+      <a href="submit.html" class="nav-link block hover:underline">Submit Project</a>
+      <a href="escrow.html" class="nav-link block hover:underline">Request Escrow</a>
+      <a href="status.html" class="nav-link block hover:underline">Track Status</a>
+      <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">Admin</a>
     </nav>
-  </header>
-  <!-- Wallet Connect Button -->
-<button onclick="openWalletModal()" id="walletBtn" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded">
-  🔌 Connect Wallet
-</button>
-
-<!-- Modal -->
-<div id="walletModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
-  <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg max-w-sm w-full">
-    <h2 class="text-xl font-semibold mb-4">Connect Wallet</h2>
-    <button onclick="connectFakeWallet()" class="w-full bg-orange-500 text-white p-2 rounded hover:bg-orange-600">🦊 MetaMask (Simulated)</button>
-    <button onclick="closeWalletModal()" class="w-full mt-4 text-sm text-gray-500 hover:underline">Cancel</button>
-  </div>
-</div>
-
-<script>
-  function openWalletModal() {
-    document.getElementById("walletModal").classList.remove("hidden");
-  }
-  
-  function closeWalletModal() {
-    document.getElementById("walletModal").classList.add("hidden");
-  }
-  
-  function connectFakeWallet() {
-    const fakeAddress = "0x" + Math.random().toString(16).substr(2, 40);
-    localStorage.setItem("walletAddress", fakeAddress);
-    updateWalletUI();
-    closeWalletModal();
-    alert("✅ Wallet connected!");
-  }
-  
-  function updateWalletUI() {
-    const walletBtn = document.getElementById("walletBtn");
-    const address = localStorage.getItem("walletAddress");
-    if (address) {
-      walletBtn.textContent = "✅ Wallet Connected";
-      walletBtn.classList.remove("bg-gray-200");
-      walletBtn.classList.add("bg-green-200", "text-green-800");
-    }
-  }
-  
-  updateWalletUI();
-</script>
-
-  <main class="p-6 max-w-4xl mx-auto">
-    <h2 class="text-2xl font-semibold mb-4">Welcome to CryptoEscrow</h2>
-    <p class="mb-6 text-gray-600 dark:text-gray-300">
-      Discover new crypto projects and request escrow services safely.
-    </p>
-
-    <div id="projectList" class="grid gap-4 sm:grid-cols-2"></div>
-  </main>
-
-  <script>
+  </header>  <!-- Hero Section -->  <section class="text-center py-16 px-4">
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">Secure Your Crypto Launch</h2>
+    <p class="text-gray-400 mb-6">Protect your funds and reputation with our transparent escrow system.</p>
+    <div class="space-x-4">
+      <a href="submit.html" class="bg-indigo-600 text-white px-4 py-2 rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Submit Project</a>
+      <a href="escrow.html" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">Request Escrow</a>
+    </div>
+  </section>  <!-- How It Works -->  <section class="max-w-4xl mx-auto px-4 py-12">
+    <h3 class="text-xl font-semibold mb-6 text-indigo-400">How It Works</h3>
+    <div class="grid sm:grid-cols-3 gap-6 text-center">
+      <div class="bg-[#1a1a1a] p-6 rounded-xl shadow hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+        <h4 class="font-bold mb-2">1. Submit</h4>
+        <p class="text-gray-400 text-sm">Add your project to our platform.</p>
+      </div>
+      <div class="bg-[#1a1a1a] p-6 rounded-xl shadow hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+        <h4 class="font-bold mb-2">2. Escrow</h4>
+        <p class="text-gray-400 text-sm">Request secure transaction handling.</p>
+      </div>
+      <div class="bg-[#1a1a1a] p-6 rounded-xl shadow hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+        <h4 class="font-bold mb-2">3. Approve</h4>
+        <p class="text-gray-400 text-sm">Admin approves and releases funds.</p>
+      </div>
+    </div>
+  </section>  <!-- Project Listings -->  <section class="max-w-6xl mx-auto px-4 py-12">
+    <h3 class="text-xl font-semibold mb-6 text-indigo-400">Featured Projects</h3>
+    <div id="projectList" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+  </section>  <!-- Footer -->  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+      <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
+      <div class="flex space-x-4 items-center">
+        <a href="terms.html" class="hover:text-indigo-400">Terms</a>
+        <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
+        <a href="https://wa.me/254712345678" target="_blank" class="hover:text-green-400">WhatsApp</a>
+        <a href="https://x.com/yourprofile" target="_blank" class="hover:text-blue-400">X</a>
+        <a href="https://instagram.com/yourprofile" target="_blank" class="hover:text-pink-400">Instagram</a>
+      </div>
+    </div>
+  </footer>  <!-- JS -->  <script>
+    // Menu toggle
     document.getElementById("menuBtn").onclick = () => {
       document.getElementById("mobileMenu").classList.toggle("hidden");
     };
 
+    // Active page highlight
     const currentPage = window.location.pathname.split("/").pop();
     document.querySelectorAll(".nav-link").forEach(link => {
       if (link.getAttribute("href") === currentPage) {
-        link.classList.add("font-semibold", "text-indigo-600");
+        link.classList.add("font-semibold", "text-indigo-500");
       }
     });
 
+    // Unlock admin (optional)
+    if (localStorage.getItem("adminAccess") === "true") {
+      document.getElementById("adminLink")?.classList.remove("hidden");
+    }
+
+    // Load projects
     const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
     const container = document.getElementById("projectList");
-
     customProjects.forEach(project => {
       const card = document.createElement("div");
-      card.className = "bg-white dark:bg-gray-700 p-5 rounded-2xl shadow hover:shadow-lg transition";
+      card.className = "bg-[#1a1a1a] p-5 rounded-xl shadow hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] transition";
       card.innerHTML = `
         <h2 class="text-lg font-semibold mb-1">${project.name}</h2>
-        <p class="text-sm text-gray-500 mb-2">${project.category}</p>
-        <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">${project.description}</p>
-        <span class="inline-block bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full mr-2">${project.status}</span>
-        <div class="mt-3 space-x-4">
-          <a href="project.html?project=${encodeURIComponent(project.name)}" class="text-sm text-indigo-600 hover:underline">View Details</a>
-          <button onclick="reportScam('${project.name}')" class="text-xs text-red-600 hover:underline">🚩 Report Scam</button>
+        <p class="text-sm text-gray-400 mb-1">${project.category}</p>
+        <p class="text-sm text-gray-500 mb-2">${project.description}</p>
+        <span class="inline-block bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full">${project.status}</span>
+        <div class="mt-3 space-x-3">
+          <a href="project.html?project=${encodeURIComponent(project.name)}" class="text-sm text-indigo-400 hover:underline">Details</a>
+          <button onclick="reportScam('${project.name}')" class="text-xs text-red-500 hover:underline">Report</button>
         </div>
       `;
       container.appendChild(card);
@@ -108,40 +99,14 @@
       const reports = JSON.parse(localStorage.getItem("scamReports") || "[]");
       reports.push({ project: projectName, reportedAt: new Date().toISOString() });
       localStorage.setItem("scamReports", JSON.stringify(reports));
-      alert("⚠️ Project reported successfully!");
+      alert("⚠️ Project reported.");
     }
-  </script>
-  <script>
-  const currentPage = window.location.pathname.split("/").pop();
-  document.querySelectorAll(".nav-link").forEach(link => {
-    if (link.getAttribute("href") === currentPage) {
-      link.classList.add("font-semibold", "text-indigo-600");
-    }
-  });
-</script>
-  <script>
-  const currentPage = window.location.pathname.split("/").pop();
-  document.querySelectorAll(".nav-link").forEach(link => {
-    if (link.getAttribute("href") === currentPage) {
-      link.classList.add("font-semibold", "text-indigo-600");
-    }
-  });
 
-  // Optional: show admin link if localStorage flag exists
-  const isAdmin = localStorage.getItem("adminAccess");
-  if (isAdmin === "true") {
-    document.getElementById("adminLink")?.classList.remove("hidden");
-  }
-</script>
- <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
-  <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-    <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
-    <div class="flex space-x-4">
-      <a href="terms.html" class="hover:text-indigo-400">Terms</a>
-      <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
-      <a href="mailto:youremail@example.com" class="hover:text-indigo-400">Contact</a>
-    </div>
-  </div>
-</footer> 
-</body>
+    // Fake Wallet Connect
+    function openWalletModal() {
+      alert("🔌 Wallet Connect (simulated)");
+      localStorage.setItem("walletAddress", "0x123456789abcdef");
+      document.getElementById("walletBtn").textContent = "✅ Connected";
+    }
+  </script></body>
 </html>

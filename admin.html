@@ -1,237 +1,121 @@
-<!-- admin.html -->
-<!DOCTYPE html>
-<html lang="en" class="bg-[#0d0d0d] text-white">
+<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Escrow Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .fade-in { animation: fadeIn 0.5s ease-in-out; }
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    button, a {
-      transition: all 0.2s ease;
-    }
-    button:hover, a:hover {
-      transform: scale(1.02);
-    }
-  </style>
 </head>
-<body class="bg-[#0d0d0d] text-white">
-
-  <!-- ✅ Navigation Menu -->
-  <header class="bg-[#0d0d0d] dark:bg-gray-900 p-4 shadow-md mb-6">
+<body class="bg-[#0d0d0d] text-white">  <!-- Header -->  <header class="bg-[#1a1a1a] p-4 shadow-md">
     <div class="flex justify-between items-center">
-      <h1 class="text-lg font-bold text-indigo-600">CryptoEscrow</h1>
-      <button id="menuBtn" class="text-gray-600 dark:text-gray-300 focus:outline-none text-2xl sm:hidden">☰</button>
+      <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow Admin</h1>
+      <div class="flex gap-3 items-center">
+        <button id="walletBtn" onclick="openWalletModal()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
+        <button id="menuBtn" class="text-white text-2xl sm:hidden">☰</button>
+      </div>
     </div>
     <nav id="mobileMenu" class="fixed top-20 right-4 z-50 bg-[#1a1a1a] text-white rounded-xl shadow-xl border border-gray-700 p-4 space-y-2 hidden sm:flex sm:static sm:bg-transparent sm:shadow-none sm:border-none sm:space-y-0 sm:flex-row sm:space-x-4 sm:p-0">
-  <a href="index.html" class="nav-link block hover:underline">🏠 Home</a>
-  <a href="submit.html" class="nav-link block hover:underline">📤 Submit Project</a>
-  <a href="escrow.html" class="nav-link block hover:underline">💼 Request Escrow</a>
-  <a href="status.html" class="nav-link block hover:underline">📍 Track Status</a>
-  <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">🔐 Admin</a>
+      <a href="index.html" class="nav-link block hover:underline">Home</a>
+      <a href="submit.html" class="nav-link block hover:underline">Submit Project</a>
+      <a href="escrow.html" class="nav-link block hover:underline">Request Escrow</a>
+      <a href="status.html" class="nav-link block hover:underline">Track Status</a>
+      <a href="admin.html" class="nav-link block hover:underline">Admin</a>
     </nav>
-  </header>
-  <!-- Wallet Connect Button -->
-<button onclick="openWalletModal()" id="walletBtn" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded">
-  🔌 Connect Wallet
-</button>
-
-<!-- Modal -->
-<div id="walletModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
-  <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg max-w-sm w-full">
-    <h2 class="text-xl font-semibold mb-4">Connect Wallet</h2>
-    <button onclick="connectFakeWallet()" class="w-full bg-orange-500 text-white p-2 rounded hover:bg-orange-600">🦊 MetaMask (Simulated)</button>
-    <button onclick="closeWalletModal()" class="w-full mt-4 text-sm text-gray-500 hover:underline">Cancel</button>
-  </div>
-</div>
-
-<script>
-  function openWalletModal() {
-    document.getElementById("walletModal").classList.remove("hidden");
-  }
-  
-  function closeWalletModal() {
-    document.getElementById("walletModal").classList.add("hidden");
-  }
-  
-  function connectFakeWallet() {
-    const fakeAddress = "0x" + Math.random().toString(16).substr(2, 40);
-    localStorage.setItem("walletAddress", fakeAddress);
-    updateWalletUI();
-    closeWalletModal();
-    alert("✅ Wallet connected!");
-  }
-  
-  function updateWalletUI() {
-    const walletBtn = document.getElementById("walletBtn");
-    const address = localStorage.getItem("walletAddress");
-    if (address) {
-      walletBtn.textContent = "✅ Wallet Connected";
-      walletBtn.classList.remove("bg-gray-200");
-      walletBtn.classList.add("bg-green-200", "text-green-800");
-    }
-  }
-  
-  updateWalletUI();
-</script>
-
-  <h1 class="text-2xl font-bold mb-6">🔐 Admin: Escrow Requests</h1>
-
-  <button onclick="exportToCSV()" class="bg-blue-600 text-white px-4 py-2 text-sm rounded hover:bg-blue-700 mb-4">
-    📤 Export Escrow Requests to CSV
-  </button>
-
-  <div class="overflow-x-auto">
-    <table class="min-w-full bg-white shadow-md rounded-xl overflow-hidden">
-      <thead class="bg-gray-200">
-        <tr class="text-left text-sm text-gray-700">
-          <th class="p-3">Project</th>
-          <th class="p-3">Buyer</th>
-          <th class="p-3">Seller</th>
-          <th class="p-3">Amount</th>
-          <th class="p-3">Terms</th>
-          <th class="p-3">Status</th>
-          <th class="p-3">Action</th>
-        </tr>
-      </thead>
-      <tbody id="requestsTable" class="text-sm text-gray-800">
-        <!-- Escrow rows go here -->
-      </tbody>
-    </table>
-  </div>
-  
-
-  <h2 class="text-xl font-bold mt-10 mb-2">🚨 Reported Projects</h2>
-  <ul id="scamList" class="bg-white rounded shadow p-4 space-y-2 text-sm"></ul>
-
-  <p id="noData" class="text-center text-gray-500 mt-6 hidden">No escrow requests found.</p>
-
-  <footer class="text-center text-sm mt-10 text-gray-500">
-    &copy; 2025 CryptoDropRank | <a href="index.html" class="text-blue-500 underline">Back to Home</a>
-  </footer>
-
-  <!-- Floating Escrow Button -->
-  <a href="escrow.html" class="fixed bottom-6 right-6 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition">
-    💼
-  </a>
-
-  <!-- ✅ JavaScript -->
-  <script>
-    // Load escrow requests
-    const table = document.getElementById("requestsTable");
-    const data = JSON.parse(localStorage.getItem("escrowRequests") || "[]");
-
-    if (data.length === 0) {
-      document.getElementById("noData").classList.remove("hidden");
-    } else {
-      data.forEach((req, index) => {
-        const row = document.createElement("tr");
-        row.className = "border-t hover:bg-gray-50";
-
-        row.innerHTML = `
-          <td class="p-3">${req.project}</td>
-          <td class="p-3">${req.buyer}</td>
-          <td class="p-3">${req.seller}</td>
-          <td class="p-3">${req.amount}</td>
-          <td class="p-3">${req.terms}</td>
-          <td class="p-3">
-            <span class="inline-block px-2 py-1 text-xs rounded-full ${
-              req.status === 'Approved' ? 'bg-green-100 text-green-700' :
-              req.status === 'Rejected' ? 'bg-red-100 text-red-700' :
-              'bg-yellow-100 text-yellow-700'
-            }">${req.status}</span>
-          </td>
-          <td class="p-3 space-x-2">
-            <button class="bg-green-500 text-white px-2 py-1 rounded text-xs" onclick="changeStatus(${index}, 'Approved')">Approve</button>
-            <button class="bg-red-500 text-white px-2 py-1 rounded text-xs" onclick="changeStatus(${index}, 'Rejected')">Reject</button>
-          </td>
-        `;
-
-        table.appendChild(row);
-      });
-    }
-
-    function changeStatus(index, newStatus) {
-      const requests = JSON.parse(localStorage.getItem("escrowRequests") || "[]");
-      requests[index].status = newStatus;
-      localStorage.setItem("escrowRequests", JSON.stringify(requests));
-      location.reload();
-    }
-
-    function exportToCSV() {
-      const data = JSON.parse(localStorage.getItem("escrowRequests") || "[]");
-      if (data.length === 0) return alert("No escrow requests found!");
-
-      const headers = Object.keys(data[0]).join(",");
-      const rows = data.map(obj => Object.values(obj).join(","));
-      const csv = [headers, ...rows].join("\n");
-
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.setAttribute("href", url);
-      a.setAttribute("download", "escrow_requests.csv");
-      a.click();
-    }
-
-    // Load scam reports
-    const scamReports = JSON.parse(localStorage.getItem("scamReports") || "[]");
-    const scamList = document.getElementById("scamList");
-
-    if (scamReports.length === 0) {
-      scamList.innerHTML = "<li class='text-gray-500'>No scam reports yet.</li>";
-    } else {
-      scamReports.forEach(r => {
-        const li = document.createElement("li");
-        li.className = "p-2 border-b";
-        li.innerHTML = `<strong>${r.project}</strong> — reported at ${new Date(r.reportedAt).toLocaleString()}`;
-        scamList.appendChild(li);
-      });
-    }
-
-    // Mobile nav toggle
+  </header>  <!-- Main -->  <main class="p-6 max-w-6xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6 text-indigo-400">Admin Dashboard</h1>
+    <div class="overflow-auto">
+      <table class="min-w-full text-sm text-left bg-[#1a1a1a] rounded-xl overflow-hidden">
+        <thead class="bg-gray-800 text-gray-300">
+          <tr>
+            <th class="p-3">Project</th>
+            <th class="p-3">Buyer</th>
+            <th class="p-3">Amount</th>
+            <th class="p-3">Details</th>
+            <th class="p-3">Status</th>
+            <th class="p-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminTable" class="text-gray-200"></tbody>
+      </table>
+    </div>
+    <div class="mt-6 text-right">
+      <button onclick="exportData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Export CSV</button>
+    </div>
+  </main>  <!-- Footer -->  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+      <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
+      <div class="flex space-x-4 items-center">
+        <a href="terms.html" class="hover:text-indigo-400">Terms</a>
+        <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
+        <a href="https://wa.me/254712345678" target="_blank" class="hover:text-green-400">WhatsApp</a>
+        <a href="https://x.com/yourprofile" target="_blank" class="hover:text-blue-400">X</a>
+        <a href="https://instagram.com/yourprofile" target="_blank" class="hover:text-pink-400">Instagram</a>
+      </div>
+    </div>
+  </footer>  <!-- Scripts -->  <script>
     document.getElementById("menuBtn").onclick = () => {
       document.getElementById("mobileMenu").classList.toggle("hidden");
     };
 
-    // Highlight active page in nav
     const currentPage = window.location.pathname.split("/").pop();
     document.querySelectorAll(".nav-link").forEach(link => {
       if (link.getAttribute("href") === currentPage) {
-        link.classList.add("font-semibold", "text-indigo-600");
+        link.classList.add("font-semibold", "text-indigo-500");
       }
     });
-  </script>
-<script>
-  const currentPage = window.location.pathname.split("/").pop();
-  document.querySelectorAll(".nav-link").forEach(link => {
-    if (link.getAttribute("href") === currentPage) {
-      link.classList.add("font-semibold", "text-indigo-600");
-    }
-  });
 
-  // Optional: show admin link if localStorage flag exists
-  const isAdmin = localStorage.getItem("adminAccess");
-  if (isAdmin === "true") {
-    document.getElementById("adminLink")?.classList.remove("hidden");
-  }
-</script>
-  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
-  <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-    <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
-    <div class="flex space-x-4">
-      <a href="terms.html" class="hover:text-indigo-400">Terms</a>
-      <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
-      <a href="mailto:youremail@example.com" class="hover:text-indigo-400">Contact</a>
-    </div>
-  </div>
-  </footer>
-</body>
+    if (localStorage.getItem("adminAccess") === "true") {
+      document.getElementById("adminLink")?.classList.remove("hidden");
+    }
+
+    function openWalletModal() {
+      alert("🔌 Wallet Connect (simulated)");
+      localStorage.setItem("walletAddress", "0x123456789abcdef");
+      document.getElementById("walletBtn").textContent = "✅ Connected";
+    }
+
+    const table = document.getElementById("adminTable");
+    const data = JSON.parse(localStorage.getItem("escrowRequests") || "[]");
+
+    data.forEach((req, i) => {
+      const row = document.createElement("tr");
+      row.className = "border-b border-gray-700";
+      row.innerHTML = `
+        <td class='p-3'>${req.project}</td>
+        <td class='p-3'>${req.buyer}</td>
+        <td class='p-3'>${req.amount}</td>
+        <td class='p-3'>${req.details}</td>
+        <td class='p-3'><span class="px-2 py-1 rounded-full text-xs ${
+          req.status === "Approved" ? "bg-green-100 text-green-700" :
+          req.status === "Rejected" ? "bg-red-100 text-red-700" :
+          "bg-yellow-100 text-yellow-700"
+        }">${req.status}</span></td>
+        <td class='p-3 space-x-2'>
+          <button onclick="updateStatus(${i}, 'Approved')" class="text-green-400 hover:underline">Approve</button>
+          <button onclick="updateStatus(${i}, 'Rejected')" class="text-red-400 hover:underline">Reject</button>
+        </td>
+      `;
+      table.appendChild(row);
+    });
+
+    function updateStatus(index, status) {
+      data[index].status = status;
+      localStorage.setItem("escrowRequests", JSON.stringify(data));
+      location.reload();
+    }
+
+    function exportData() {
+      const csvRows = ["Project,Buyer,Amount,Details,Status"];
+      data.forEach(r => {
+        csvRows.push(`${r.project},${r.buyer},${r.amount},${r.details},${r.status}`);
+      });
+      const csv = csvRows.join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "escrow_data.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script></body>
 </html>

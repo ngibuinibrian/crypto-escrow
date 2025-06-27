@@ -1,91 +1,70 @@
-<!DOCTYPE html>
-<html lang="en" class="bg-[#0d0d0d] text-white">
+<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Check Escrow Status</title>
+  <title>Submit Project</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <!-- Navigation -->
-  <header class="bg-white dark:bg-gray-900 p-4 shadow-md">
+<body class="bg-[#0d0d0d] text-white">  <!-- Header -->  <header class="bg-[#1a1a1a] p-4 shadow-md">
     <div class="flex justify-between items-center">
-      <h1 class="text-lg font-bold text-indigo-600">CryptoEscrow</h1>
-      <button id="menuBtn" class="text-gray-600 dark:text-gray-300 text-2xl sm:hidden">☰</button>
+      <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow</h1>
+      <div class="flex gap-3 items-center">
+        <button id="walletBtn" onclick="openWalletModal()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
+        <button id="menuBtn" class="text-white text-2xl sm:hidden">☰</button>
+      </div>
     </div>
-    
     <nav id="mobileMenu" class="fixed top-20 right-4 z-50 bg-[#1a1a1a] text-white rounded-xl shadow-xl border border-gray-700 p-4 space-y-2 hidden sm:flex sm:static sm:bg-transparent sm:shadow-none sm:border-none sm:space-y-0 sm:flex-row sm:space-x-4 sm:p-0">
-  <a href="index.html" class="nav-link block hover:underline">🏠 Home</a>
-  <a href="submit.html" class="nav-link block hover:underline">📤 Submit Project</a>
-  <a href="escrow.html" class="nav-link block hover:underline">💼 Request Escrow</a>
-  <a href="status.html" class="nav-link block hover:underline">📍 Track Status</a>
-  <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">🔐 Admin</a>
-</nav>
-  </header>
+      <a href="index.html" class="nav-link block hover:underline">Home</a>
+      <a href="submit.html" class="nav-link block hover:underline">Submit Project</a>
+      <a href="escrow.html" class="nav-link block hover:underline">Request Escrow</a>
+      <a href="status.html" class="nav-link block hover:underline">Track Status</a>
+      <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">Admin</a>
+    </nav>
+  </header>  <!-- Main Content -->  <main class="p-6 max-w-xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Submit a New Project</h1><form action="https://formspree.io/f/xknllpab" method="POST" class="space-y-4 bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md p-6 rounded-xl shadow">
+  <input name="name" required placeholder="Project Name" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+  <input name="category" required placeholder="Category" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+  <textarea name="description" required placeholder="Short Description" rows="3" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white"></textarea>
+  <select name="status" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+    <option value="Upcoming">Upcoming</option>
+    <option value="Active">Active</option>
+    <option value="Closed">Closed</option>
+  </select>
+  <input type="email" name="_replyto" placeholder="Your Email (optional)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+  <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Submit</button>
+</form>
 
-  <main class="p-6 max-w-xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4">📍 Track Your Escrow Status</h1>
-    <form onsubmit="checkStatus(event)" class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow space-y-4">
-      <input type="text" id="lookup" class="w-full p-2 rounded border dark:bg-gray-700 dark:border-gray-600" placeholder="Enter project or buyer name" required />
-      <button class="w-full bg-indigo-600 text-white p-2 rounded">Search</button>
-    </form>
-    <div id="result" class="mt-6 text-sm space-y-4"></div>
-  </main>
-
-  <script>
+  </main>  <!-- Footer -->  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+      <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
+      <div class="flex space-x-4 items-center">
+        <a href="terms.html" class="hover:text-indigo-400">Terms</a>
+        <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
+        <a href="https://wa.me/254712345678" target="_blank" class="hover:text-green-400">WhatsApp</a>
+        <a href="https://x.com/yourprofile" target="_blank" class="hover:text-blue-400">X</a>
+        <a href="https://instagram.com/yourprofile" target="_blank" class="hover:text-pink-400">Instagram</a>
+      </div>
+    </div>
+  </footer>  <!-- Scripts -->  <script>
     document.getElementById("menuBtn").onclick = () => {
       document.getElementById("mobileMenu").classList.toggle("hidden");
     };
+
     const currentPage = window.location.pathname.split("/").pop();
     document.querySelectorAll(".nav-link").forEach(link => {
       if (link.getAttribute("href") === currentPage) {
-        link.classList.add("font-semibold", "text-indigo-600");
+        link.classList.add("font-semibold", "text-indigo-500");
       }
     });
 
-    function checkStatus(e) {
-      e.preventDefault();
-      const keyword = document.getElementById("lookup").value.toLowerCase();
-      const requests = JSON.parse(localStorage.getItem("escrowRequests") || "[]");
-      const matches = requests.filter(r =>
-        r.project.toLowerCase().includes(keyword) || r.buyer.toLowerCase().includes(keyword)
-      );
-
-      const result = document.getElementById("result");
-      result.innerHTML = "";
-
-      if (matches.length === 0) {
-        result.innerHTML = "<p class='text-red-500'>No matching requests found.</p>";
-      } else {
-        matches.forEach(r => {
-          result.innerHTML += `
-            <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
-              <p><strong>Project:</strong> ${r.project}</p>
-              <p><strong>Buyer:</strong> ${r.buyer}</p>
-              <p><strong>Status:</strong>
-                <span class="inline-block px-2 py-1 text-xs rounded-full ${
-                  r.status === "Approved"
-                    ? "bg-green-100 text-green-700"
-                    : r.status === "Rejected"
-                    ? "bg-red-100 text-red-700"
-                    : "bg-yellow-100 text-yellow-700"
-                }">${r.status}</span>
-              </p>
-            </div>
-          `;
-        });
-      }
+    if (localStorage.getItem("adminAccess") === "true") {
+      document.getElementById("adminLink")?.classList.remove("hidden");
     }
-  </script>
-  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
-  <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-    <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
-    <div class="flex space-x-4">
-      <a href="terms.html" class="hover:text-indigo-400">Terms</a>
-      <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
-      <a href="mailto:youremail@example.com" class="hover:text-indigo-400">Contact</a>
-    </div>
-  </div>
-</footer>
-</body>
+
+    function openWalletModal() {
+      alert("🔌 Wallet Connect (simulated)");
+      localStorage.setItem("walletAddress", "0x123456789abcdef");
+      document.getElementById("walletBtn").textContent = "✅ Connected";
+    }
+  </script></body>
 </html>

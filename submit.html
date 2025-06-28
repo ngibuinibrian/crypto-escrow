@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Submit Project</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Escrow</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="firebase.js"></script>
 </head>
@@ -14,7 +14,7 @@
     <div class="flex justify-between items-center">
       <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow</h1>
       <div class="flex gap-3 items-center">
-        <button id="walletBtn" onclick="openWalletModal()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
+        <button id="walletBtn" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
         <button id="menuBtn" class="text-white text-2xl sm:hidden">☰</button>
       </div>
     </div>
@@ -29,41 +29,44 @@
 
   <!-- Main Content -->
   <main class="p-6 max-w-xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Submit a New Project</h1>
+    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Request Escrow Service</h1>
 
-    <form id="submitForm" class="space-y-4 bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md p-6 rounded-xl shadow">
-      <input name="name" required placeholder="Project Name" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-      <input name="category" required placeholder="Category" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-      <textarea name="description" required placeholder="Short Description" rows="3" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white"></textarea>
-      <select name="status" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-        <option value="Upcoming">Upcoming</option>
-        <option value="Active">Active</option>
-        <option value="Closed">Closed</option>
-      </select>
-      <input type="email" name="email" placeholder="Your Email (optional)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-      <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Submit</button>
+    <form id="escrowForm" class="space-y-4 bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md p-6 rounded-xl shadow">
+      <input name="project" id="projectInput" required placeholder="Project Name" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+      <input name="buyer" required placeholder="Your Name or Wallet Address" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+      <input name="amount" required placeholder="Amount (in USD or Token)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+      <textarea name="details" required placeholder="Escrow Details or Notes" rows="3" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white"></textarea>
+      <input type="email" name="_replyto" placeholder="Your Email (optional)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+      <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Submit Request</button>
     </form>
-    <p id="done" class="text-green-500 text-sm mt-3 hidden">✅ Submitted for approval.</p>
+    <p id="done" class="text-green-500 text-sm mt-3 hidden">✅ Request submitted successfully.</p>
   </main>
 
+  <!-- Firebase Script -->
   <script type="module">
     import { db, collection, addDoc } from './firebase.js';
 
-    const form = document.getElementById('submitForm');
-    const done = document.getElementById('done');
+    // Prefill project name if passed in query
+    const params = new URLSearchParams(window.location.search);
+    const projectName = params.get("project");
+    if (projectName) document.getElementById("projectInput").value = projectName;
+
+    const form = document.getElementById("escrowForm");
+    const done = document.getElementById("done");
 
     form.onsubmit = async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
       const data = Object.fromEntries(formData.entries());
-      data.status = data.status || "Pending";
+      data.status = "Pending";
 
-      await addDoc(collection(db, "pendingProjects"), data);
+      await addDoc(collection(db, "escrowRequests"), data);
       form.reset();
       done.classList.remove("hidden");
-    }
+    };
   </script>
 
+  <!-- Wallet Connect + UI -->
   <script>
     document.getElementById("menuBtn").onclick = () => {
       document.getElementById("mobileMenu").classList.toggle("hidden");
@@ -80,10 +83,19 @@
       document.getElementById("adminLink")?.classList.remove("hidden");
     }
 
-    function openWalletModal() {
-      alert("🔌 Wallet Connect (simulated)");
-      localStorage.setItem("walletAddress", "0x123456789abcdef");
-      document.getElementById("walletBtn").textContent = "✅ Connected";
+    document.getElementById("walletBtn").onclick = async () => {
+      if (window.ethereum) {
+        try {
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          const wallet = accounts[0];
+          localStorage.setItem('walletAddress', wallet);
+          document.getElementById('walletBtn').textContent = '✅ ' + wallet.slice(0, 6) + '...' + wallet.slice(-4);
+        } catch (err) {
+          alert("Wallet connection failed.");
+        }
+      } else {
+        alert("Please install MetaMask to connect your wallet.");
+      }
     }
   </script>
 

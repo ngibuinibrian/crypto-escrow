@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" class="bg-[#0d0d0d] text-white">
+<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +6,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="firebase.js"></script>
 </head>
-<body class="bg-[#0d0d0d] text-white">
-
-  <!-- Header -->
-  <header class="bg-[#1a1a1a] p-4 shadow-md">
+<body class="bg-[#0d0d0d] text-white">  <!-- Header -->  <header class="bg-[#1a1a1a] p-4 shadow-md">
     <div class="flex justify-between items-center">
       <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow</h1>
       <div class="flex gap-3 items-center">
@@ -25,11 +21,9 @@
       <a href="status.html" class="nav-link block hover:underline">Track Status</a>
       <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">Admin</a>
     </nav>
-  </header>
-
-  <!-- Main -->
-  <main class="p-6 max-w-2xl mx-auto">
+  </header>  <!-- Main -->  <main class="p-6 max-w-2xl mx-auto">
     <div id="projectDetails" class="bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md rounded-xl shadow p-6">
+      <img id="projLogo" src="" alt="Project Logo" class="rounded w-full h-52 object-cover mb-4 hidden">
       <h1 id="projName" class="text-3xl font-bold text-indigo-400 mb-2"></h1>
       <p><strong>Category:</strong> <span id="projCategory" class="text-gray-300"></span></p>
       <p class="mt-2 text-sm text-gray-400" id="projDescription"></p>
@@ -39,16 +33,14 @@
         <button onclick="alert('⚠️ Project reported.')" class="text-sm text-red-500 hover:underline">Report Project</button>
       </div>
     </div>
-  </main>
-
-  <!-- Scripts -->
-  <script type="module">
+  </main>  <!-- Scripts -->  <script type="module">
     import { db, collection, getDocs } from './firebase.js';
 
     const params = new URLSearchParams(window.location.search);
     const projectName = params.get("project")?.toLowerCase();
 
     const container = document.getElementById("projectDetails");
+    const logo = document.getElementById("projLogo");
 
     async function loadProject() {
       const querySnapshot = await getDocs(collection(db, "approvedProjects"));
@@ -61,6 +53,12 @@
           document.getElementById("projDescription").textContent = data.description;
           document.getElementById("projStatus").textContent = data.status;
           document.getElementById("applyLink").href = `escrow.html?project=${encodeURIComponent(data.name)}`;
+
+          if (data.logo) {
+            logo.src = data.logo;
+            logo.classList.remove("hidden");
+          }
+
           found = true;
         }
       });
@@ -74,9 +72,7 @@
     }
 
     loadProject();
-  </script>
-
-  <script>
+  </script>  <script>
     document.getElementById("menuBtn").onclick = () => {
       document.getElementById("mobileMenu").classList.toggle("hidden");
     };
@@ -97,7 +93,5 @@
       localStorage.setItem("walletAddress", "0x123456789abcdef");
       document.getElementById("walletBtn").textContent = "✅ Connected";
     }
-  </script>
-
-</body>
+  </script></body>
 </html>

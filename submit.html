@@ -33,7 +33,7 @@
 
     <form id="escrowForm" class="space-y-4 bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md p-6 rounded-xl shadow">
       <input name="project" id="projectInput" required placeholder="Project Name" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-      <input name="buyer" required placeholder="Your Name or Wallet Address" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+      <input name="buyer" id="buyerInput" required placeholder="Your Name or Wallet Address" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
       <input name="amount" required placeholder="Amount (in USD or Token)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
       <textarea name="details" required placeholder="Escrow Details or Notes" rows="3" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white"></textarea>
       <input type="email" name="_replyto" placeholder="Your Email (optional)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
@@ -50,6 +50,12 @@
     const params = new URLSearchParams(window.location.search);
     const projectName = params.get("project");
     if (projectName) document.getElementById("projectInput").value = projectName;
+
+    // Autofill wallet address into buyer field if already connected
+    const savedWallet = localStorage.getItem("walletAddress");
+    if (savedWallet) {
+      document.getElementById("buyerInput").value = savedWallet;
+    }
 
     const form = document.getElementById("escrowForm");
     const done = document.getElementById("done");
@@ -90,6 +96,7 @@
           const wallet = accounts[0];
           localStorage.setItem('walletAddress', wallet);
           document.getElementById('walletBtn').textContent = '✅ ' + wallet.slice(0, 6) + '...' + wallet.slice(-4);
+          document.getElementById('buyerInput').value = wallet;
         } catch (err) {
           alert("Wallet connection failed.");
         }

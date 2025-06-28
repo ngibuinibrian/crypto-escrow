@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escrow Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="firebase.js"></script>
+</head>
+<body class="bg-[#0d0d0d] text-white">  <header class="bg-[#1a1a1a] p-4 shadow-md">
+    <div class="flex justify-between items-center">
+      <h1 class="text-lg font-bold text-indigo-500">Escrow Admin Panel</h1>
+      <div class="flex gap-3 items-center">
+        <button id="walletBtn" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
+      </div>
+    </div>
+  </header>  <main class="p-6 max-w-6xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Escrow Requests</h1>
+    <div id="escrowTable" class="space-y-4"></div>
+  </main>  <script type="module">
+    import { db, collection, getDocs, doc, updateDoc } from './firebase.js';
+
+    const escrowTable = document.getElementById("escrowTable");
+    const adminWallet = "0x73C118b885A4Cb458f5b5e82aC18b3c60641b496".toLowerCase();
+
+    async function checkAdmin() {
+      if (!window.ethereum) return alert("Please install MetaMask to use this feature.");
+
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      const wallet = accounts[0]?.toLowerCase();
+
+      if (wallet !== adminWallet) {
+        escrowTable.innerHTML = "<p class='text-red-500'>⛔ Access denied. Admin wallet required.</p>";
+        return;
+      }
+
+      loadEscrows();
+    }
+
+    async function loadEscrows() {
+      const snapshot = await getDocs(collection(db, "escrowRequests"));
+      snapshot.forEach(docRef => {
+        const data = docRef.data();
+        const div = document.createElement("div");
+        div.className = "bg-[#1a1a1a] p-4 rounded shadow border border-gray-700";
+        div.innerHTML = `
+          <h2 class="text-xl font-semibold text-indigo-400">${data.project}</h2>
+          <p><strong>Buyer:</strong> ${data.buyer}</p>
+          <p><strong>Amount:</strong> ${data.amount}</p>
+          <p><strong>Details:</strong> ${data.details}</p>
+          <p><strong>Status:</strong> <span class="text-yellow-400">${data.status}</span></p>
+          <div class="mt-3 space-x-2">
+            <button class="text-sm bg-green-600 px-3 py-1 rounded hover:bg-green-500" onclick='updateStatus("${docRef.id}", "Approved")'>Approve</button>
+            <button class="text-sm bg-blue-600 px-3 py-1 rounded hover:bg-blue-500" onclick='updateStatus("${docRef.id}", "Released")'>Release</button>
+            <button class="text-sm bg-red-600 px-3 py-1 rounded hover:bg-red-500" onclick='updateStatus("${docRef.id}", "Disputed")'>Flag Dispute</button>
+          </div>
+        `;
+        escrowTable.appendChild(div);
+      });
+    }
+
+    window.updateStatus = async (id, status) => {
+      const ref = doc(db, "escrowRequests", id);
+      await updateDoc(ref, { status });
+      alert(`✅ Status updated to ${status}`);
+      location.reload();
+    };
+
+    checkAdmin();
+  </script>  <script>
+    document.getElementById("walletBtn").onclick = async () => {
+      if (window.ethereum) {
+        try {
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          const wallet = accounts[0];
+          localStorage.setItem('walletAddress', wallet);
+          document.getElementById('walletBtn').textContent = '✅ ' + wallet.slice(0, 6) + '...' + wallet.slice(-4);
+        } catch (err) {
+          alert("Wallet connection failed.");
+        }
+      } else {
+        alert("Please install MetaMask to connect your wallet.");
+      }
+    };
+  </script></body>
+</html>

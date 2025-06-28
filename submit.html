@@ -1,11 +1,16 @@
-<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
+<!DOCTYPE html>
+<html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Submit Project</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="firebase.js"></script>
 </head>
-<body class="bg-[#0d0d0d] text-white">  <!-- Header -->  <header class="bg-[#1a1a1a] p-4 shadow-md">
+<body class="bg-[#0d0d0d] text-white">
+
+  <!-- Header -->
+  <header class="bg-[#1a1a1a] p-4 shadow-md">
     <div class="flex justify-between items-center">
       <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow</h1>
       <div class="flex gap-3 items-center">
@@ -20,32 +25,46 @@
       <a href="status.html" class="nav-link block hover:underline">Track Status</a>
       <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">Admin</a>
     </nav>
-  </header>  <!-- Main Content -->  <main class="p-6 max-w-xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Submit a New Project</h1><form action="https://formspree.io/f/mldnadyo" method="POST" class="space-y-4 bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md p-6 rounded-xl shadow">
-  <input name="name" required placeholder="Project Name" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <input name="category" required placeholder="Category" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <textarea name="description" required placeholder="Short Description" rows="3" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white"></textarea>
-  <select name="status" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-    <option value="Upcoming">Upcoming</option>
-    <option value="Active">Active</option>
-    <option value="Closed">Closed</option>
-  </select>
-  <input type="email" name="_replyto" placeholder="Your Email (optional)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Submit</button>
-</form>
+  </header>
 
-  </main>  <!-- Footer -->  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
-    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-      <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
-      <div class="flex space-x-4 items-center">
-        <a href="terms.html" class="hover:text-indigo-400">Terms</a>
-        <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
-        <a href="https://wa.me/254707919370" target="_blank" class="hover:text-green-400">WhatsApp</a>
-        <a href="https://x.com/_gibuh" target="_blank" class="hover:text-blue-400">X</a>
-        <a href="https://instagram.com/brian_ngibuini" target="_blank" class="hover:text-pink-400">Instagram</a>
-      </div>
-    </div>
-  </footer>  <!-- Scripts -->  <script>
+  <!-- Main Content -->
+  <main class="p-6 max-w-xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Submit a New Project</h1>
+
+    <form id="submitForm" class="space-y-4 bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md p-6 rounded-xl shadow">
+      <input name="name" required placeholder="Project Name" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+      <input name="category" required placeholder="Category" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+      <textarea name="description" required placeholder="Short Description" rows="3" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white"></textarea>
+      <select name="status" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+        <option value="Upcoming">Upcoming</option>
+        <option value="Active">Active</option>
+        <option value="Closed">Closed</option>
+      </select>
+      <input type="email" name="email" placeholder="Your Email (optional)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+      <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Submit</button>
+    </form>
+    <p id="done" class="text-green-500 text-sm mt-3 hidden">✅ Submitted for approval.</p>
+  </main>
+
+  <script type="module">
+    import { db, collection, addDoc } from './firebase.js';
+
+    const form = document.getElementById('submitForm');
+    const done = document.getElementById('done');
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      data.status = data.status || "Pending";
+
+      await addDoc(collection(db, "pendingProjects"), data);
+      form.reset();
+      done.classList.remove("hidden");
+    }
+  </script>
+
+  <script>
     document.getElementById("menuBtn").onclick = () => {
       document.getElementById("mobileMenu").classList.toggle("hidden");
     };
@@ -66,5 +85,7 @@
       localStorage.setItem("walletAddress", "0x123456789abcdef");
       document.getElementById("walletBtn").textContent = "✅ Connected";
     }
-  </script></body>
+  </script>
+
+</body>
 </html>

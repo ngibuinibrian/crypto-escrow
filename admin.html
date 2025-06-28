@@ -1,44 +1,40 @@
-<!DOCTYPE html>
-<html lang="en" class="bg-[#0d0d0d] text-white">
+<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="firebase.js"></script>
 </head>
-<body class="bg-[#0d0d0d] text-white">
-
-  <!-- Header -->
-  <header class="bg-[#1a1a1a] p-4 shadow-md">
+<body class="bg-[#0d0d0d] text-white">  <header class="bg-[#1a1a1a] p-4 shadow-md">
     <div class="flex justify-between items-center">
-      <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow Admin</h1>
-      <div class="flex gap-3 items-center">
-        <button id="walletBtn" onclick="openWalletModal()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
-        <button id="menuBtn" class="text-white text-2xl sm:hidden">☰</button>
-      </div>
+      <h1 class="text-lg font-bold text-indigo-500">Admin Panel</h1>
+      <button id="walletBtn" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
     </div>
-    <nav id="mobileMenu" class="fixed top-20 right-4 z-50 bg-[#1a1a1a] text-white rounded-xl shadow-xl border border-gray-700 p-4 space-y-2 hidden sm:flex sm:static sm:bg-transparent sm:shadow-none sm:border-none sm:space-y-0 sm:flex-row sm:space-x-4 sm:p-0">
-      <a href="index.html" class="nav-link block hover:underline">Home</a>
-      <a href="submit.html" class="nav-link block hover:underline">Submit Project</a>
-      <a href="escrow.html" class="nav-link block hover:underline">Request Escrow</a>
-      <a href="status.html" class="nav-link block hover:underline">Track Status</a>
-      <a href="admin.html" class="nav-link block hover:underline">Admin</a>
-    </nav>
-  </header>
-
-  <!-- Main Section -->
-  <main class="p-6 max-w-6xl mx-auto">
-    <h1 class="text-2xl font-bold mb-6 text-indigo-400">Pending Project Submissions</h1>
+  </header>  <main class="p-6 max-w-5xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Pending Projects</h1>
     <div id="adminTable" class="space-y-4"></div>
-  </main>
+  </main>  <script type="module">
+    import { db, collection, getDocs, addDoc, deleteDoc, doc } from './firebase.js';
 
-  <script type="module">
-    import { db, collection, getDocs, addDoc, doc, updateDoc } from './firebase.js';
-
+    const adminWallet = "0x73C118b885A4Cb458f5b5e82aC18b3c60641b496".toLowerCase();
     const adminTable = document.getElementById("adminTable");
 
-    async function loadSubmissions() {
+    async function checkAdmin() {
+      if (!window.ethereum) return alert("Please install MetaMask to use this feature.");
+
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      const wallet = accounts[0]?.toLowerCase();
+
+      if (wallet !== adminWallet) {
+        adminTable.innerHTML = "<p class='text-red-500'>⛔ Access denied. Admin wallet required.</p>";
+        return;
+      }
+
+      loadProjects();
+    }
+
+    async function loadProjects() {
       const snapshot = await getDocs(collection(db, "pendingProjects"));
       snapshot.forEach(docRef => {
         const data = docRef.data();
@@ -46,72 +42,52 @@
         div.className = "bg-[#1a1a1a] p-4 rounded shadow border border-gray-700";
         div.innerHTML = `
           <h2 class="text-xl font-semibold text-indigo-400">${data.name}</h2>
-          <p class="text-sm text-gray-400 mb-1"><strong>Category:</strong> ${data.category}</p>
-          <p class="text-sm text-gray-300 mb-2">${data.description}</p>
-          <span class="inline-block text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">${data.status}</span>
-          <div class="mt-3 space-x-2">
-            <button class="text-sm bg-green-600 px-3 py-1 rounded hover:bg-green-500" onclick='approveProject("${docRef.id}", ${JSON.stringify(data).replace(/"/g, "&quot;")})'>Approve</button>
+          <p><strong>Category:</strong> ${data.category}</p>
+          <p><strong>Status:</strong> ${data.status}</p>
+          <p class="text-gray-400 text-sm mb-2">${data.description}</p>
+          <label class="block text-sm text-gray-300 mb-2">
+            <input type="checkbox" class="verifyCheck mr-1" data-name="${data.name}" /> Mark as Verified
+          </label>
+          <div class="space-x-2">
+            <button class="text-sm bg-green-600 px-3 py-1 rounded hover:bg-green-500" onclick='approveProject("${docRef.id}", ${JSON.stringify(data)})'>Approve</button>
+            <button class="text-sm bg-red-600 px-3 py-1 rounded hover:bg-red-500" onclick='deleteProject("${docRef.id}")'>Reject</button>
           </div>
         `;
         adminTable.appendChild(div);
       });
     }
 
-    async function approveProject(id, data) {
+    window.approveProject = async (id, data) => {
+      const check = document.querySelector(`input.verifyCheck[data-name='${data.name}']`);
+      const verified = check?.checked || false;
+      data.verified = verified;
       await addDoc(collection(db, "approvedProjects"), data);
-      const ref = doc(db, "pendingProjects", id);
-      await updateDoc(ref, { status: "Approved" });
-      alert("✅ Project approved and published.");
+      await deleteDoc(doc(db, "pendingProjects", id));
+      alert("✅ Project approved.");
       location.reload();
-    }
-
-    loadSubmissions();
-  </script>
-
-  <script>
-    document.getElementById("menuBtn").onclick = () => {
-      document.getElementById("mobileMenu").classList.toggle("hidden");
     };
 
-    const currentPage = window.location.pathname.split("/").pop();
-    document.querySelectorAll(".nav-link").forEach(link => {
-      if (link.getAttribute("href") === currentPage) {
-        link.classList.add("font-semibold", "text-indigo-500");
-      }
-    });
+    window.deleteProject = async (id) => {
+      await deleteDoc(doc(db, "pendingProjects", id));
+      alert("❌ Project rejected.");
+      location.reload();
+    };
 
-    function openWalletModal() {
-      alert("🔌 Wallet Connect (simulated)");
-      localStorage.setItem("walletAddress", "0x123456789abcdef");
-      document.getElementById("walletBtn").textContent = "✅ Connected";
-    }
-  </script>
-  <script>
-  const adminWallet = "0x73C118b885A4Cb458f5b5e82aC18b3c60641b496".toLowerCase();
-
-  async function checkAdminWallet() {
-    if (window.ethereum) {
-      try {
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        const connectedWallet = accounts[0].toLowerCase();
-
-        if (connectedWallet !== adminWallet) {
-          alert("⛔ Access denied: Admin wallet required.");
-          document.querySelectorAll("button").forEach(btn => btn.disabled = true);
-          document.getElementById("adminTable").innerHTML = "<p class='text-red-500'>🔐 You are not authorized to manage this section.</p>";
-        } else {
-          console.log("✅ Admin access granted.");
+    checkAdmin();
+  </script>  <script>
+    document.getElementById("walletBtn").onclick = async () => {
+      if (window.ethereum) {
+        try {
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          const wallet = accounts[0];
+          localStorage.setItem('walletAddress', wallet);
+          document.getElementById('walletBtn').textContent = '✅ ' + wallet.slice(0, 6) + '...' + wallet.slice(-4);
+        } catch (err) {
+          alert("Wallet connection failed.");
         }
-      } catch (err) {
-        alert("⚠️ Wallet connection failed.");
+      } else {
+        alert("Please install MetaMask to connect your wallet.");
       }
-    } else {
-      alert("Please install MetaMask to use admin functions.");
-    }
-  }
-
-  window.onload = checkAdminWallet;
-</script>
-
-</body>
+    };
+  </script></body>
 </html>

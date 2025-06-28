@@ -1,15 +1,16 @@
 <!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Submit Project</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Status</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="firebase.js"></script>
 </head>
 <body class="bg-[#0d0d0d] text-white">  <!-- Header -->  <header class="bg-[#1a1a1a] p-4 shadow-md">
     <div class="flex justify-between items-center">
       <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow</h1>
       <div class="flex gap-3 items-center">
-        <button id="walletBtn" onclick="openWalletModal()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
+        <button id="walletBtn" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
         <button id="menuBtn" class="text-white text-2xl sm:hidden">☰</button>
       </div>
     </div>
@@ -20,32 +21,59 @@
       <a href="status.html" class="nav-link block hover:underline">Track Status</a>
       <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">Admin</a>
     </nav>
-  </header>  <!-- Main Content -->  <main class="p-6 max-w-xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Submit a New Project</h1><form action="https://formspree.io/f/xknllpab" method="POST" class="space-y-4 bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md p-6 rounded-xl shadow">
-  <input name="name" required placeholder="Project Name" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <input name="category" required placeholder="Category" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <textarea name="description" required placeholder="Short Description" rows="3" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white"></textarea>
-  <select name="status" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-    <option value="Upcoming">Upcoming</option>
-    <option value="Active">Active</option>
-    <option value="Closed">Closed</option>
-  </select>
-  <input type="email" name="_replyto" placeholder="Your Email (optional)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Submit</button>
+  </header>  <!-- Main -->  <main class="p-6 max-w-xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Track Your Submission</h1><form id="searchForm" class="space-y-4">
+  <input id="searchInput" placeholder="Enter project name, email, or wallet address" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
+  <button type="submit" class="bg-indigo-600 w-full text-white p-2 rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Search</button>
 </form>
 
-  </main>  <!-- Footer -->  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
-    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-      <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
-      <div class="flex space-x-4 items-center">
-        <a href="terms.html" class="hover:text-indigo-400">Terms</a>
-        <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
-        <a href="https://wa.me/254707919370" target="_blank" class="hover:text-green-400">WhatsApp</a>
-        <a href="https://x.com/_gibuh" target="_blank" class="hover:text-blue-400">X</a>
-        <a href="https://instagram.com/brian_ngibuini" target="_blank" class="hover:text-pink-400">Instagram</a>
-      </div>
-    </div>
-  </footer>  <!-- Scripts -->  <script>
+<div id="results" class="mt-6 space-y-4"></div>
+
+  </main>  <script type="module">
+    import { db, collection, getDocs } from './firebase.js';
+
+    const form = document.getElementById("searchForm");
+    const input = document.getElementById("searchInput");
+    const results = document.getElementById("results");
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const term = input.value.toLowerCase().trim();
+      results.innerHTML = "<p class='text-gray-400'>Searching...</p>";
+
+      const projects = await getDocs(collection(db, "pendingProjects"));
+      const escrows = await getDocs(collection(db, "escrowRequests"));
+
+      let matches = [];
+
+      projects.forEach(doc => {
+        const data = doc.data();
+        if (data.name?.toLowerCase().includes(term) || data.email?.toLowerCase().includes(term)) {
+          matches.push({ type: "Project Submission", ...data });
+        }
+      });
+
+      escrows.forEach(doc => {
+        const data = doc.data();
+        if (data.project?.toLowerCase().includes(term) || data._replyto?.toLowerCase().includes(term) || data.buyer?.toLowerCase().includes(term)) {
+          matches.push({ type: "Escrow Request", ...data });
+        }
+      });
+
+      if (matches.length === 0) {
+        results.innerHTML = "<p class='text-red-500'>No matching submissions found.</p>";
+      } else {
+        results.innerHTML = matches.map(item => `
+          <div class="border border-gray-700 rounded p-4 bg-[#1a1a1a]">
+            <p class="text-indigo-400 font-semibold">${item.type}</p>
+            <p class="text-sm"><strong>Name:</strong> ${item.name || item.project}</p>
+            <p class="text-sm text-gray-400"><strong>Status:</strong> ${item.status}</p>
+            <p class="text-sm text-gray-500">${item.details || item.description || "No additional info"}</p>
+          </div>
+        `).join("");
+      }
+    }
+  </script>  <script>
     document.getElementById("menuBtn").onclick = () => {
       document.getElementById("mobileMenu").classList.toggle("hidden");
     };
@@ -61,10 +89,19 @@
       document.getElementById("adminLink")?.classList.remove("hidden");
     }
 
-    function openWalletModal() {
-      alert("🔌 Wallet Connect (simulated)");
-      localStorage.setItem("walletAddress", "0x123456789abcdef");
-      document.getElementById("walletBtn").textContent = "✅ Connected";
+    document.getElementById("walletBtn").onclick = async () => {
+      if (window.ethereum) {
+        try {
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          const wallet = accounts[0];
+          localStorage.setItem('walletAddress', wallet);
+          document.getElementById('walletBtn').textContent = '✅ ' + wallet.slice(0, 6) + '...' + wallet.slice(-4);
+        } catch (err) {
+          alert("Wallet connection failed.");
+        }
+      } else {
+        alert("Please install MetaMask to connect your wallet.");
+      }
     }
   </script></body>
 </html>

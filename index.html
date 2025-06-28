@@ -48,7 +48,10 @@
         card.className = "bg-[#1a1a1a] p-4 rounded shadow border border-gray-700";
         card.innerHTML = `
           <img src="${data.logo || 'https://via.placeholder.com/300x200?text=No+Logo'}" alt="Logo" class="rounded w-full h-48 object-cover mb-3">
-          <h2 class="text-xl font-semibold text-indigo-400 mb-1">${data.name}</h2>
+          <h2 class="text-xl font-semibold text-indigo-400 mb-1 flex items-center">
+            ${data.name}
+            ${data.verified ? '<span class="ml-2 text-green-400 text-sm font-semibold">✔️ Verified</span>' : ''}
+          </h2>
           <p class="text-sm text-gray-400 mb-1"><strong>Category:</strong> ${data.category}</p>
           <p class="text-sm text-gray-300 mb-2">${data.description}</p>
           <span class="inline-block text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">${data.status}</span>

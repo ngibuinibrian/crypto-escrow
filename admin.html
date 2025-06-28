@@ -86,6 +86,32 @@
       document.getElementById("walletBtn").textContent = "✅ Connected";
     }
   </script>
+  <script>
+  const adminWallet = "0x73C118b885A4Cb458f5b5e82aC18b3c60641b496".toLowerCase();
+
+  async function checkAdminWallet() {
+    if (window.ethereum) {
+      try {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        const connectedWallet = accounts[0].toLowerCase();
+
+        if (connectedWallet !== adminWallet) {
+          alert("⛔ Access denied: Admin wallet required.");
+          document.querySelectorAll("button").forEach(btn => btn.disabled = true);
+          document.getElementById("adminTable").innerHTML = "<p class='text-red-500'>🔐 You are not authorized to manage this section.</p>";
+        } else {
+          console.log("✅ Admin access granted.");
+        }
+      } catch (err) {
+        alert("⚠️ Wallet connection failed.");
+      }
+    } else {
+      alert("Please install MetaMask to use admin functions.");
+    }
+  }
+
+  window.onload = checkAdminWallet;
+</script>
 
 </body>
 </html>

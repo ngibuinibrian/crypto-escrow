@@ -1,11 +1,16 @@
-<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
+<!DOCTYPE html>
+<html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Submit Project</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Details</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="firebase.js"></script>
 </head>
-<body class="bg-[#0d0d0d] text-white">  <!-- Header -->  <header class="bg-[#1a1a1a] p-4 shadow-md">
+<body class="bg-[#0d0d0d] text-white">
+
+  <!-- Header -->
+  <header class="bg-[#1a1a1a] p-4 shadow-md">
     <div class="flex justify-between items-center">
       <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow</h1>
       <div class="flex gap-3 items-center">
@@ -20,32 +25,58 @@
       <a href="status.html" class="nav-link block hover:underline">Track Status</a>
       <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">Admin</a>
     </nav>
-  </header>  <!-- Main Content -->  <main class="p-6 max-w-xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Submit a New Project</h1><form action="https://formspree.io/f/xknllpab" method="POST" class="space-y-4 bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md p-6 rounded-xl shadow">
-  <input name="name" required placeholder="Project Name" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <input name="category" required placeholder="Category" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <textarea name="description" required placeholder="Short Description" rows="3" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white"></textarea>
-  <select name="status" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-    <option value="Upcoming">Upcoming</option>
-    <option value="Active">Active</option>
-    <option value="Closed">Closed</option>
-  </select>
-  <input type="email" name="_replyto" placeholder="Your Email (optional)" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <button type="submit" class="bg-indigo-600 text-white p-2 w-full rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Submit</button>
-</form>
+  </header>
 
-  </main>  <!-- Footer -->  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
-    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-      <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
-      <div class="flex space-x-4 items-center">
-        <a href="terms.html" class="hover:text-indigo-400">Terms</a>
-        <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
-        <a href="https://wa.me/254707919370" target="_blank" class="hover:text-green-400">WhatsApp</a>
-        <a href="https://x.com/_gibuh" target="_blank" class="hover:text-blue-400">X</a>
-        <a href="https://instagram.com/brian_ngibuini" target="_blank" class="hover:text-pink-400">Instagram</a>
+  <!-- Main -->
+  <main class="p-6 max-w-2xl mx-auto">
+    <div id="projectDetails" class="bg-[#1a1a1a] bg-opacity-60 backdrop-blur-md rounded-xl shadow p-6">
+      <h1 id="projName" class="text-3xl font-bold text-indigo-400 mb-2"></h1>
+      <p><strong>Category:</strong> <span id="projCategory" class="text-gray-300"></span></p>
+      <p class="mt-2 text-sm text-gray-400" id="projDescription"></p>
+      <p class="mt-2"><strong>Status:</strong> <span id="projStatus" class="text-sm px-2 py-1 rounded-full bg-yellow-100 text-yellow-700"></span></p>
+      <div class="mt-4 space-x-4">
+        <a id="applyLink" href="#" class="bg-indigo-600 text-white px-4 py-2 rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Request Escrow</a>
+        <button onclick="alert('⚠️ Project reported.')" class="text-sm text-red-500 hover:underline">Report Project</button>
       </div>
     </div>
-  </footer>  <!-- Scripts -->  <script>
+  </main>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { db, collection, getDocs } from './firebase.js';
+
+    const params = new URLSearchParams(window.location.search);
+    const projectName = params.get("project")?.toLowerCase();
+
+    const container = document.getElementById("projectDetails");
+
+    async function loadProject() {
+      const querySnapshot = await getDocs(collection(db, "approvedProjects"));
+      let found = false;
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.name.toLowerCase() === projectName) {
+          document.getElementById("projName").textContent = data.name;
+          document.getElementById("projCategory").textContent = data.category;
+          document.getElementById("projDescription").textContent = data.description;
+          document.getElementById("projStatus").textContent = data.status;
+          document.getElementById("applyLink").href = `escrow.html?project=${encodeURIComponent(data.name)}`;
+          found = true;
+        }
+      });
+
+      if (!found) {
+        container.innerHTML = `
+          <p class='text-red-500'>⚠️ Project not found.</p>
+          <a href='index.html' class='text-indigo-400 hover:underline'>← Go Back</a>
+        `;
+      }
+    }
+
+    loadProject();
+  </script>
+
+  <script>
     document.getElementById("menuBtn").onclick = () => {
       document.getElementById("mobileMenu").classList.toggle("hidden");
     };
@@ -66,5 +97,7 @@
       localStorage.setItem("walletAddress", "0x123456789abcdef");
       document.getElementById("walletBtn").textContent = "✅ Connected";
     }
-  </script></body>
+  </script>
+
+</body>
 </html>

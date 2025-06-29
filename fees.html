@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escrow Fees & Payment Info</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0d0d0d] text-white">
+  <header class="bg-[#1a1a1a] p-4 shadow-md">
+    <div class="flex justify-between items-center">
+      <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow</h1>
+      <button id="menuBtn" class="text-white text-2xl sm:hidden">☰</button>
+    </div>
+    <nav id="mobileMenu" class="fixed top-20 right-4 z-50 bg-[#1a1a1a] text-white rounded-xl shadow-xl border border-gray-700 p-4 space-y-2 hidden sm:flex sm:static sm:bg-transparent sm:shadow-none sm:border-none sm:space-y-0 sm:flex-row sm:space-x-4 sm:p-0">
+      <a href="index.html" class="nav-link block hover:underline">Home</a>
+      <a href="submit.html" class="nav-link block hover:underline">Submit Project</a>
+      <a href="escrow.html" class="nav-link block hover:underline">Request Escrow</a>
+      <a href="status.html" class="nav-link block hover:underline">Track Status</a>
+      <a href="fees.html" class="nav-link block hover:underline font-semibold text-indigo-500">Fees</a>
+    </nav>
+  </header>  <main class="p-6 max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold text-indigo-400 mb-4">Escrow Service Fees</h1><div class="bg-[#1a1a1a] p-6 rounded-xl border border-gray-700">
+  <p class="mb-4 text-gray-300">We charge a small fee for each escrow transaction to ensure trust, transparency, and dispute handling.</p>
+
+  <h2 class="text-xl font-semibold mb-2 text-indigo-300">💰 Standard Escrow Fee</h2>
+  <p class="mb-4">✔️ <strong>3% of the transaction amount</strong></p>
+
+  <h2 class="text-xl font-semibold mb-2 text-indigo-300">📲 Payment Methods</h2>
+  <ul class="list-disc ml-6 text-gray-300 space-y-2">
+    <li><strong>M-PESA Paybill:</strong> <code>123456</code> (Account: Escrow)</li>
+    <li><strong>Personal M-PESA:</strong> <code>0712 345 678</code> (Name: Crypto Escrow)</li>
+    <li><strong>ETH Wallet:</strong> <code>0x73C118b885A4Cb458f5b5e82aC18b3c60641b496</code></li>
+  </ul>
+
+  <h2 class="text-xl font-semibold mt-6 mb-2 text-indigo-300">💬 Need Help?</h2>
+  <p class="text-gray-300">Message us directly on WhatsApp:</p>
+  <a href="https://wa.me/254712345678" target="_blank" class="mt-2 inline-block bg-green-600 px-4 py-2 rounded hover:bg-green-500 text-white">💬 Chat with Admin</a>
+</div>
+
+  </main>  <script>
+    document.getElementById("menuBtn").onclick = () => {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
+    };
+
+    const currentPage = window.location.pathname.split("/").pop();
+    document.querySelectorAll(".nav-link").forEach(link => {
+      if (link.getAttribute("href") === currentPage) {
+        link.classList.add("font-semibold", "text-indigo-500");
+      }
+    });
+  </script></body>
+</html>

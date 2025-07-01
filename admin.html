@@ -17,8 +17,15 @@
   </main>  <script type="module">
     import { db, collection, getDocs, addDoc, deleteDoc, doc } from './firebase.js';
 
-    const adminWallet = "0x73C118b885A4Cb458f5b5e82aC18b3c60641b496".toLowerCase();
-    const adminTable = document.getElementById("adminTable");
+   const admins = [
+  "0x73C118b885A4Cb458f5b5e82aC18b3c60641b496",  // original
+  "0xD4C7d41935FIBba76137422D9FF6EcD5B210e33e"                  // your new wallet
+].map(addr => addr.toLowerCase());
+
+if (!admins.includes(wallet)) {
+  // deny access
+}
+
 
     async function checkAdmin() {
       if (!window.ethereum) return alert("Please install MetaMask to use this feature.");

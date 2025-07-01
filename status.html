@@ -1,122 +1,61 @@
-<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
+<!DOCTYPE html>
+<html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Track Status</title>
+  <title>Track Escrow Status</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="firebase.js"></script>
 </head>
-<body class="bg-[#0d0d0d] text-white">  <!-- Header -->  <header class="bg-[#1a1a1a] p-4 shadow-md">
+<body class="bg-[#0d0d0d] text-white">
+  <header class="bg-[#1a1a1a] p-4 shadow-md">
     <div class="flex justify-between items-center">
-      <h1 class="text-lg font-bold text-indigo-500">CryptoEscrow</h1>
-      <div class="flex gap-3 items-center">
-        <button id="walletBtn" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
-        <button id="menuBtn" class="text-white text-2xl sm:hidden">☰</button>
-      </div>
+      <h1 class="text-lg font-bold text-indigo-500">Track Status</h1>
     </div>
-    <nav id="mobileMenu" class="fixed top-20 right-4 z-50 bg-[#1a1a1a] text-white rounded-xl shadow-xl border border-gray-700 p-4 space-y-2 hidden sm:flex sm:static sm:bg-transparent sm:shadow-none sm:border-none sm:space-y-0 sm:flex-row sm:space-x-4 sm:p-0">
-      <a href="index.html" class="nav-link block hover:underline">Home</a>
-      <a href="submit.html" class="nav-link block hover:underline">Submit Project</a>
-      <a href="escrow.html" class="nav-link block hover:underline">Request Escrow</a>
-      <a href="status.html" class="nav-link block hover:underline">Track Status</a>
-      <a href="admin.html" id="adminLink" class="nav-link block hover:underline hidden">Admin</a>
-    </nav>
-  </header>  <!-- Main -->  <main class="p-6 max-w-xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Track Your Submission</h1><form id="searchForm" class="space-y-4">
-  <input id="searchInput" placeholder="Enter project name, email, or wallet address" class="w-full p-2 border border-gray-700 rounded bg-[#0d0d0d] text-white">
-  <button type="submit" class="bg-indigo-600 w-full text-white p-2 rounded hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]">Search</button>
-</form>
+  </header>
 
-<div id="results" class="mt-6 space-y-4"></div>
+  <main class="p-6 max-w-3xl mx-auto">
+    <h2 class="text-xl font-bold mb-4 text-indigo-400">Search Escrow Status</h2>
+    <input id="searchInput" placeholder="Enter project name, email or wallet" class="w-full mb-4 p-2 rounded bg-[#0d0d0d] border border-gray-700 text-white">
+    <div id="results" class="space-y-4"></div>
+  </main>
 
-  </main>  <script type="module">
+  <script type="module">
     import { db, collection, getDocs } from './firebase.js';
 
-    const form = document.getElementById("searchForm");
     const input = document.getElementById("searchInput");
     const results = document.getElementById("results");
 
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const term = input.value.toLowerCase().trim();
-      results.innerHTML = "<p class='text-gray-400'>Searching...</p>";
+    input.oninput = async () => {
+      const value = input.value.trim().toLowerCase();
+      results.innerHTML = "Searching...";
+      const snapshot = await getDocs(collection(db, "escrowRequests"));
+      let found = false;
+      results.innerHTML = "";
 
-      const projects = await getDocs(collection(db, "pendingProjects"));
-      const escrows = await getDocs(collection(db, "escrowRequests"));
-
-      let matches = [];
-
-      projects.forEach(doc => {
+      snapshot.forEach(doc => {
         const data = doc.data();
-        if (data.name?.toLowerCase().includes(term) || data.email?.toLowerCase().includes(term)) {
-          matches.push({ type: "Project Submission", ...data });
+        const match = [data.project, data.buyer, data._replyto].some(field => field?.toLowerCase().includes(value));
+        if (match) {
+          found = true;
+          const div = document.createElement("div");
+          div.className = "bg-[#1a1a1a] p-4 rounded shadow border border-gray-700";
+          div.innerHTML = `
+            <h3 class="text-lg font-semibold text-indigo-400">${data.project}</h3>
+            <p class="text-sm"><strong>Status:</strong> ${data.status}</p>
+            <p class="text-sm text-gray-400">Amount: ${data.amount}</p>
+            <p class="text-sm text-gray-400 mb-2">${data.details}</p>
+            <a href="chat.html?escrow=${doc.id}" target="_blank" class="inline-block text-sm bg-gray-700 px-3 py-1 rounded hover:bg-gray-600">✉️ Open Chat</a>
+          `;
+          results.appendChild(div);
         }
       });
 
-      escrows.forEach(doc => {
-        const data = doc.data();
-        if (data.project?.toLowerCase().includes(term) || data._replyto?.toLowerCase().includes(term) || data.buyer?.toLowerCase().includes(term)) {
-          matches.push({ type: "Escrow Request", ...data });
-        }
-      });
-
-      if (matches.length === 0) {
-        results.innerHTML = "<p class='text-red-500'>No matching submissions found.</p>";
-      } else {
-        results.innerHTML = matches.map(item => `
-          <div class="border border-gray-700 rounded p-4 bg-[#1a1a1a]">
-            <p class="text-indigo-400 font-semibold">${item.type}</p>
-            <p class="text-sm"><strong>Name:</strong> ${item.name || item.project}</p>
-            <p class="text-sm text-gray-400"><strong>Status:</strong> ${item.status}</p>
-            <p class="text-sm text-gray-500">${item.details || item.description || "No additional info"}</p>
-          </div>
-        `).join("");
+      if (!found) {
+        results.innerHTML = "<p class='text-red-400'>No results found.</p>";
       }
-    }
-  </script>  <script>
-    document.getElementById("menuBtn").onclick = () => {
-      document.getElementById("mobileMenu").classList.toggle("hidden");
     };
-
-    const currentPage = window.location.pathname.split("/").pop();
-    document.querySelectorAll(".nav-link").forEach(link => {
-      if (link.getAttribute("href") === currentPage) {
-        link.classList.add("font-semibold", "text-indigo-500");
-      }
-    });
-
-    if (localStorage.getItem("adminAccess") === "true") {
-      document.getElementById("adminLink")?.classList.remove("hidden");
-    }
-
-    document.getElementById("walletBtn").onclick = async () => {
-      if (window.ethereum) {
-        try {
-          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-          const wallet = accounts[0];
-          localStorage.setItem('walletAddress', wallet);
-          document.getElementById('walletBtn').textContent = '✅ ' + wallet.slice(0, 6) + '...' + wallet.slice(-4);
-        } catch (err) {
-          alert("Wallet connection failed.");
-        }
-      } else {
-        alert("Please install MetaMask to connect your wallet.");
-      }
-    }
   </script>
-  <!-- Footer -->
-  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
-    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-      <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
-      <div class="flex space-x-4 items-center">
-        <a href="fees.html" class="hover:text-indigo-400">Fees</a>
-        <a href="terms.html" class="hover:text-indigo-400">Terms</a>
-        <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
-        <a href="https://wa.me/254712345678" target="_blank" class="hover:text-green-400">WhatsApp</a>
-        <a href="https://x.com/yourprofile" target="_blank" class="hover:text-blue-400">X</a>
-        <a href="https://instagram.com/yourprofile" target="_blank" class="hover:text-pink-400">Instagram</a>
-      </div>
-    </div>
-  </footer>
+
 </body>
 </html>

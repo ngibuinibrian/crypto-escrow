@@ -23,8 +23,14 @@
   <script type="module">
     import { db, collection, getDocs, doc, updateDoc } from './firebase.js';
 
-    const adminWallet = "0x73C118b885A4Cb458f5b5e82aC18b3c60641b496".toLowerCase();
-    const requestList = document.getElementById("requestList");
+const admins = [
+  "0x73C118b885A4Cb458f5b5e82aC18b3c60641b496",  // original
+  "0xYOUR_SECOND_ADMIN_WALLET"                  // your new wallet
+].map(addr => addr.toLowerCase());
+
+if (!admins.includes(wallet)) {
+  // deny access
+}
 
     async function checkAdmin() {
       if (!window.ethereum) return alert("Please install MetaMask to use this feature.");

@@ -1,26 +1,30 @@
-<!DOCTYPE html><html lang="en" class="bg-[#0d0d0d] text-white">
+<!DOCTYPE html>
+<html lang="en" class="bg-[#0d0d0d] text-white">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Escrow Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="firebase.js"></script>
 </head>
-<body class="bg-[#0d0d0d] text-white">  <header class="bg-[#1a1a1a] p-4 shadow-md">
+<body class="bg-[#0d0d0d] text-white">
+  <header class="bg-[#1a1a1a] p-4 shadow-md">
     <div class="flex justify-between items-center">
       <h1 class="text-lg font-bold text-indigo-500">Escrow Admin Panel</h1>
-      <div class="flex gap-3 items-center">
-        <button id="walletBtn" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
-      </div>
+      <button id="walletBtn" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">🔌 Connect Wallet</button>
     </div>
-  </header>  <main class="p-6 max-w-6xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Escrow Requests</h1>
-    <div id="escrowTable" class="space-y-4"></div>
-  </main>  <script type="module">
+  </header>
+
+  <main class="p-6 max-w-5xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4 text-indigo-400">Pending Escrow Requests</h1>
+    <div id="requestList" class="space-y-4"></div>
+  </main>
+
+  <script type="module">
     import { db, collection, getDocs, doc, updateDoc } from './firebase.js';
 
-    const escrowTable = document.getElementById("escrowTable");
     const adminWallet = "0x73C118b885A4Cb458f5b5e82aC18b3c60641b496".toLowerCase();
+    const requestList = document.getElementById("requestList");
 
     async function checkAdmin() {
       if (!window.ethereum) return alert("Please install MetaMask to use this feature.");
@@ -29,14 +33,14 @@
       const wallet = accounts[0]?.toLowerCase();
 
       if (wallet !== adminWallet) {
-        escrowTable.innerHTML = "<p class='text-red-500'>⛔ Access denied. Admin wallet required.</p>";
+        requestList.innerHTML = "<p class='text-red-500'>⛔ Access denied. Admin wallet required.</p>";
         return;
       }
 
-      loadEscrows();
+      loadRequests();
     }
 
-    async function loadEscrows() {
+    async function loadRequests() {
       const snapshot = await getDocs(collection(db, "escrowRequests"));
       snapshot.forEach(docRef => {
         const data = docRef.data();
@@ -46,27 +50,29 @@
           <h2 class="text-xl font-semibold text-indigo-400">${data.project}</h2>
           <p><strong>Buyer:</strong> ${data.buyer}</p>
           <p><strong>Amount:</strong> ${data.amount}</p>
-          <p><strong>Details:</strong> ${data.details}</p>
-          <p><strong>Status:</strong> <span class="text-yellow-400">${data.status}</span></p>
-          <div class="mt-3 space-x-2">
+          <p class="text-gray-400 text-sm mb-2">${data.details}</p>
+          <p class="text-sm text-yellow-400 mb-2"><strong>Status:</strong> ${data.status}</p>
+          <div class="space-x-2 mt-2">
             <button class="text-sm bg-green-600 px-3 py-1 rounded hover:bg-green-500" onclick='updateStatus("${docRef.id}", "Approved")'>Approve</button>
             <button class="text-sm bg-blue-600 px-3 py-1 rounded hover:bg-blue-500" onclick='updateStatus("${docRef.id}", "Released")'>Release</button>
-            <button class="text-sm bg-red-600 px-3 py-1 rounded hover:bg-red-500" onclick='updateStatus("${docRef.id}", "Disputed")'>Flag Dispute</button>
+            <button class="text-sm bg-red-600 px-3 py-1 rounded hover:bg-red-500" onclick='updateStatus("${docRef.id}", "Disputed")'>Dispute</button>
+            <a href="chat.html?escrow=${docRef.id}" target="_blank" class="inline-block text-sm bg-gray-700 px-3 py-1 rounded hover:bg-gray-600">✉️ Open Chat</a>
           </div>
         `;
-        escrowTable.appendChild(div);
+        requestList.appendChild(div);
       });
     }
 
-    window.updateStatus = async (id, status) => {
-      const ref = doc(db, "escrowRequests", id);
-      await updateDoc(ref, { status });
-      alert(`✅ Status updated to ${status}`);
+    window.updateStatus = async (id, newStatus) => {
+      await updateDoc(doc(db, "escrowRequests", id), { status: newStatus });
+      alert(`✅ Status updated to ${newStatus}`);
       location.reload();
     };
 
     checkAdmin();
-  </script>  <script>
+  </script>
+
+  <script>
     document.getElementById("walletBtn").onclick = async () => {
       if (window.ethereum) {
         try {
@@ -82,19 +88,6 @@
       }
     };
   </script>
-<!-- Footer -->
-  <footer class="mt-12 bg-[#1a1a1a] text-gray-400 py-6 text-sm border-t border-gray-800">
-    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-      <p>&copy; 2025 <span class="text-indigo-500 font-semibold">CryptoEscrow</span>. All rights reserved.</p>
-      <div class="flex space-x-4 items-center">
-        <a href="fees.html" class="hover:text-indigo-400">Fees</a>
-        <a href="terms.html" class="hover:text-indigo-400">Terms</a>
-        <a href="privacy.html" class="hover:text-indigo-400">Privacy</a>
-        <a href="https://wa.me/254712345678" target="_blank" class="hover:text-green-400">WhatsApp</a>
-        <a href="https://x.com/yourprofile" target="_blank" class="hover:text-blue-400">X</a>
-        <a href="https://instagram.com/yourprofile" target="_blank" class="hover:text-pink-400">Instagram</a>
-      </div>
-    </div>
-  </footer>
+
 </body>
 </html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#0d0d0d] text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escrow Chat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="firebase.js"></script>
+</head>
+<body class="bg-[#0d0d0d] text-white">
+
+  <header class="bg-[#1a1a1a] p-4 shadow-md">
+    <div class="flex justify-between items-center">
+      <h1 class="text-lg font-bold text-indigo-500">Escrow Chat</h1>
+      <button id="menuBtn" class="text-white text-2xl sm:hidden">☰</button>
+    </div>
+  </header>
+
+  <main class="p-4 max-w-2xl mx-auto">
+    <div class="bg-[#1a1a1a] p-4 rounded-xl shadow border border-gray-700">
+      <h2 class="text-xl font-semibold text-indigo-400 mb-2">Dispute Chat Room</h2>
+      <div id="chatBox" class="space-y-3 max-h-[50vh] overflow-y-auto border border-gray-700 p-3 rounded mb-4 bg-[#0d0d0d]">
+        <!-- Messages appear here -->
+      </div>
+
+      <form id="chatForm" class="flex gap-2">
+        <input id="chatInput" placeholder="Type your message..." class="flex-grow p-2 rounded bg-gray-900 border border-gray-700 text-white">
+        <button class="bg-indigo-600 px-4 py-2 rounded hover:bg-indigo-500 text-white">Send</button>
+      </form>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db, collection, addDoc, query, orderBy, onSnapshot } from './firebase.js';
+
+    const chatBox = document.getElementById("chatBox");
+    const chatForm = document.getElementById("chatForm");
+    const chatInput = document.getElementById("chatInput");
+
+    const params = new URLSearchParams(location.search);
+    const escrowId = params.get("escrow");
+    const user = localStorage.getItem("walletAddress") || "Guest";
+
+    const chatRef = collection(db, `chats/${escrowId}/messages`);
+
+    // Load existing messages in real-time
+    const q = query(chatRef, orderBy("timestamp"));
+    onSnapshot(q, snapshot => {
+      chatBox.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement("div");
+        div.className = `p-2 rounded border border-gray-700 text-sm ${data.sender === user ? 'bg-indigo-900' : 'bg-gray-800'}`;
+        div.innerHTML = `<strong class='text-indigo-300'>${data.sender}</strong><br>${data.message}`;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+    });
+
+    chatForm.onsubmit = async (e) => {
+      e.preventDefault();
+      if (!chatInput.value.trim()) return;
+
+      await addDoc(chatRef, {
+        message: chatInput.value.trim(),
+        sender: user,
+        timestamp: new Date()
+      });
+
+      chatInput.value = "";
+    };
+  </script>
+
+</body>
+</html>
